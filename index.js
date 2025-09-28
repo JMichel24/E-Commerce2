@@ -17,6 +17,17 @@ const STOCK_PRODUCTS = [
     "Teclado Mecánico"
 ];
 
+// Base de datos de usuarios simulada
+let MOCK_USERS = [
+    { email: "demo@neon.com", password: "password", name: "Demo User" }
+];
+
+// Estado global de autenticación
+let authStatus = {
+    isLoggedIn: false,
+    userName: "Mi Cuenta"
+};
+
 
 const products = [
     {
@@ -154,6 +165,106 @@ function updateShippingBanner() {
         progressText.style.color = '#ff00cc';
     }
 }
+
+// --- LÓGICA DE AUTENTICACIÓN ---
+
+function updateAuthDisplay() {
+    const authText = document.getElementById('authText');
+    const authBtn = document.getElementById('authBtn');
+    
+    if (!authText || !authBtn) return;
+    
+    // Remover manejadores anteriores para evitar duplicados
+    authBtn.removeEventListener('click', handleLogoutClick);
+    authBtn.removeEventListener('click', openAuthModal);
+
+    if (authStatus.isLoggedIn) {
+        authText.textContent = authStatus.userName.split(' ')[0]; 
+        authBtn.addEventListener('click', handleLogoutClick); 
+        showNotification(`👋 ¡Hola, ${authStatus.userName.split(' ')[0]}! Has iniciado sesión.`);
+    } else {
+        authText.textContent = "Mi Cuenta";
+        authBtn.addEventListener('click', openAuthModal);
+    }
+}
+
+window.openAuthModal = function() {
+    if (authStatus.isLoggedIn) {
+        showNotification(`Ya has iniciado sesión como ${authStatus.userName}.`);
+        return; 
+    }
+    document.getElementById('authModal').style.display = 'block';
+    switchAuthMode('login');
+}
+
+window.closeAuthModal = function() {
+    document.getElementById('authModal').style.display = 'none';
+}
+
+window.switchAuthMode = function(mode) {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const authTitle = document.getElementById('authTitle');
+    
+    if (mode === 'register') {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        authTitle.innerHTML = '<i class="fas fa-user-plus"></i> Registrarse';
+    } else {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        authTitle.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
+    }
+}
+
+function handleLogoutClick() {
+    authStatus.isLoggedIn = false;
+    authStatus.userName = "Mi Cuenta";
+    updateAuthDisplay();
+    showNotification(`🚪 ¡Sesión cerrada! Vuelve pronto.`);
+}
+
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    const user = MOCK_USERS.find(u => u.email === email && u.password === password);
+
+    if (user) {
+        authStatus.isLoggedIn = true;
+        authStatus.userName = user.name;
+        closeAuthModal();
+        updateAuthDisplay();
+    } else {
+        showNotification("❌ Error: Credenciales incorrectas. (demo@neon.com / password)");
+    }
+    this.reset();
+});
+
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('registerName').value;
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    
+    if (MOCK_USERS.some(u => u.email === email)) {
+        showNotification("❌ Error: El correo ya está registrado.");
+        return;
+    }
+    
+    const newUser = { name, email, password };
+    MOCK_USERS.push(newUser);
+    
+    authStatus.isLoggedIn = true;
+    authStatus.userName = name;
+    
+    closeAuthModal();
+    updateAuthDisplay();
+    showNotification(`🎉 ¡Registro exitoso, ${name}! Sesión iniciada.`);
+    this.reset();
+});
+
 
 // --- LÓGICA DEL CONTADOR DE OFERTAS ---
 
@@ -322,12 +433,10 @@ function loadProducts(productList = products) {
         card.setAttribute('data-id', product.id); 
         card.onclick = () => openModal(product.id); 
 
-        // === CORRECCIÓN APLICADA AQUÍ: OPERADOR TERNARIO COMPLETO ===
         let priceDisplay = product.originalPrice ? 
             `<p class="price" style="text-decoration:line-through; font-size:0.9rem; color:#888;">$${product.originalPrice} MXN</p>
              <p class="price" style="color:#ff00cc; font-size:1.2rem;">$${product.price} MXN</p>` :
             `<p class="price">$${product.price} MXN</p>`;
-        // ==========================================================
 
         card.innerHTML = `
             <img src="${product.image}" alt="${product.name}">
@@ -350,13 +459,11 @@ function initCarousel() {
         item.className = 'carousel-item';
         item.setAttribute('data-id', product.id);
         item.onclick = () => openModal(product.id); 
-        
-        // === CORRECCIÓN APLICADA AQUÍ: OPERADOR TERNARIO COMPLETO ===
+
         let priceDisplay = product.originalPrice ? 
             `<p style="text-decoration: line-through; color: #888; font-size: 0.9rem;">$${product.originalPrice} MXN</p>
              <p style="color: #ff00cc; font-weight: 700; font-size: 1.2rem;">$${product.price} MXN</p>` :
             `<p style="color: #ff00cc; font-weight: 700; font-size: 1.2rem;">$${product.price} MXN</p>`;
-        // ==========================================================
 
         item.innerHTML = `
             <img src="${product.image}" alt="${product.name}">
@@ -539,12 +646,11 @@ window.openModal = function(productId) {
     currentReviewingProductId = productId; 
     if (!product) return;
 
-    // === CORRECCIÓN APLICADA AQUÍ: OPERADOR TERNARIO COMPLETO ===
+    // Bloque de precio corregido
     let priceDisplay = product.originalPrice ? 
         `<p style="text-decoration:line-through; color:#888; font-size:1.1rem;">$${product.originalPrice} MXN</p>
          <p style="color:#ff00cc; font-size:1.5rem; font-weight:700;">$${product.price} MXN</p>` :
         `<p class="price" style="font-size:1.5rem; color:#ff00cc; margin:10px 0;">$${product.price} MXN</p>`;
-    // ==========================================================
 
     details.innerHTML = `
         <div style="text-align:center;">
@@ -664,6 +770,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateShippingBanner(); 
     startOfferCountdowns(); 
     startStockAlerts(); 
+    updateAuthDisplay(); // Carga el estado de la sesión al inicio
     
     // Función para manejar el clic en los enlaces de contacto
     const handleContactClick = (e) => {
@@ -692,4 +799,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('addReviewBtn').addEventListener('click', () => {
         showNotification("⚠️ ¡Primero selecciona un producto en el catálogo para dejar tu reseña!");
     });
+    
+    // Cerrar modales al hacer clic fuera
+    window.onclick = function(event) {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        });
+    };
 });

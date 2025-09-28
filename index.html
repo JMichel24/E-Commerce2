@@ -25,6 +25,8 @@
                 </ul>
             </nav>
             <div class="search-cart">
+                <button id="authBtn" class="btn-auth" onclick="openAuthModal()"><i class="fas fa-user"></i> <span id="authText">Mi Cuenta</span></button>
+                
                 <input type="text" placeholder="Buscar productos..." id="searchInput">
                 <button id="cartBtn"><i class="fas fa-shopping-cart"></i> <span id="cartCount">0</span></button>
             </div>
@@ -143,6 +145,15 @@
                             <option>OXXO / 7-Eleven</option>
                         </select>
                     </div>
+                    <div id="cardFields" style="margin-top: 15px; border-top: 1px solid rgba(255,0,204,0.2); padding-top: 15px;">
+                        <h3>Datos de Tarjeta (Simulación)</h3>
+                        <div style="margin: 15px 0;"><input type="text" placeholder="Número de Tarjeta (16 dígitos)" pattern="\d{16}" required></div>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" placeholder="MM/AA" pattern="\d{2}/\d{2}" required style="width: 50%;">
+                            <input type="text" placeholder="CVV" pattern="\d{3,4}" required style="width: 50%;">
+                        </div>
+                    </div>
+                    
                     <button type="submit" class="btn" style="width: 100%; margin-top: 20px;">Confirmar Pedido</button>
                 </form>
             </div>
@@ -208,6 +219,33 @@
             </div>
         </div>
     </div>
+
+    <div id="authModal" class="modal">
+        <div class="modal-content auth-modal-content">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            <div class="auth-container">
+                <h2 id="authTitle"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</h2>
+                
+                <form id="loginForm" class="auth-form">
+                    <h3 style="color: #00ffff;">Bienvenido de nuevo</h3>
+                    <input type="email" id="loginEmail" placeholder="Correo Electrónico" required>
+                    <input type="password" id="loginPassword" placeholder="Contraseña" required>
+                    <button type="submit" class="btn" style="width: 100%; margin-top: 20px;">Acceder</button>
+                    <p class="switch-link" onclick="switchAuthMode('register')">¿No tienes cuenta? Regístrate aquí.</p>
+                </form>
+
+                <form id="registerForm" class="auth-form" style="display: none;">
+                    <h3 style="color: #ff00cc;">Crear una Cuenta</h3>
+                    <input type="text" id="registerName" placeholder="Nombre Completo" required>
+                    <input type="email" id="registerEmail" placeholder="Correo Electrónico" required>
+                    <input type="password" id="registerPassword" placeholder="Contraseña (mín. 6 caracteres)" required>
+                    <button type="submit" class="btn" style="width: 100%; margin-top: 20px;">Crear Cuenta</button>
+                    <p class="switch-link" onclick="switchAuthMode('login')">¿Ya tienes cuenta? Inicia Sesión.</p>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
     <footer id="contacto">
         <div class="footer-container">

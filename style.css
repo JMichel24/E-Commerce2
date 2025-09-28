@@ -90,6 +90,26 @@ nav a:hover::after {
     gap: 10px;
 }
 
+.btn-auth {
+    background: rgba(51, 147, 255, 0.2); /* Azul suave */
+    color: #00ffff;
+    border: 1px solid #00ffff;
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s;
+    margin-right: 15px; /* Separación del input de búsqueda */
+}
+
+.btn-auth:hover {
+    background: rgba(51, 147, 255, 0.4);
+    box-shadow: 0 0 10px rgba(51, 147, 255, 0.6);
+}
+
 #searchInput {
     padding: 8px 15px;
     border-radius: 30px;
@@ -667,7 +687,8 @@ nav a:hover::after {
 #reviewForm input,
 #reviewForm textarea,
 .contact-form-area input,
-.contact-form-area textarea {
+.contact-form-area textarea,
+.auth-form input { /* Agregado auth-form input */
     width: 100%;
     padding: 12px;
     margin: 8px 0;
@@ -676,6 +697,30 @@ nav a:hover::after {
     background: rgba(30, 30, 60, 0.7);
     color: white;
     font-family: 'Poppins', sans-serif;
+}
+
+/* --- Estilos de Autenticación Modal --- */
+
+.auth-modal-content {
+    max-width: 400px;
+    text-align: center;
+}
+
+.auth-form input {
+    background: #0a0a14;
+    border: 1px solid #333;
+}
+
+.switch-link {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.switch-link:hover {
+    color: #ff00cc;
 }
 
 /* --- Estilos de Contacto Modal --- */
