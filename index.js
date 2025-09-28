@@ -322,10 +322,12 @@ function loadProducts(productList = products) {
         card.setAttribute('data-id', product.id); 
         card.onclick = () => openModal(product.id); 
 
+        // === CORRECCIÓN APLICADA AQUÍ: OPERADOR TERNARIO COMPLETO ===
         let priceDisplay = product.originalPrice ? 
             `<p class="price" style="text-decoration:line-through; font-size:0.9rem; color:#888;">$${product.originalPrice} MXN</p>
              <p class="price" style="color:#ff00cc; font-size:1.2rem;">$${product.price} MXN</p>` :
             `<p class="price">$${product.price} MXN</p>`;
+        // ==========================================================
 
         card.innerHTML = `
             <img src="${product.image}" alt="${product.name}">
@@ -348,10 +350,13 @@ function initCarousel() {
         item.className = 'carousel-item';
         item.setAttribute('data-id', product.id);
         item.onclick = () => openModal(product.id); 
-
+        
+        // === CORRECCIÓN APLICADA AQUÍ: OPERADOR TERNARIO COMPLETO ===
         let priceDisplay = product.originalPrice ? 
             `<p style="text-decoration: line-through; color: #888; font-size: 0.9rem;">$${product.originalPrice} MXN</p>
-             <p style="color: #ff00cc; font-weight: 700; font-size: 1.2rem;">$${product.price} MXN</p>`;
+             <p style="color: #ff00cc; font-weight: 700; font-size: 1.2rem;">$${product.price} MXN</p>` :
+            `<p style="color: #ff00cc; font-weight: 700; font-size: 1.2rem;">$${product.price} MXN</p>`;
+        // ==========================================================
 
         item.innerHTML = `
             <img src="${product.image}" alt="${product.name}">
@@ -534,10 +539,12 @@ window.openModal = function(productId) {
     currentReviewingProductId = productId; 
     if (!product) return;
 
+    // === CORRECCIÓN APLICADA AQUÍ: OPERADOR TERNARIO COMPLETO ===
     let priceDisplay = product.originalPrice ? 
         `<p style="text-decoration:line-through; color:#888; font-size:1.1rem;">$${product.originalPrice} MXN</p>
          <p style="color:#ff00cc; font-size:1.5rem; font-weight:700;">$${product.price} MXN</p>` :
         `<p class="price" style="font-size:1.5rem; color:#ff00cc; margin:10px 0;">$${product.price} MXN</p>`;
+    // ==========================================================
 
     details.innerHTML = `
         <div style="text-align:center;">
@@ -647,7 +654,8 @@ document.getElementById('contactForm')?.addEventListener('submit', function(e) {
 });
 
 
-// --- Evento de Inicio ---
+// --- EVENTOS DE INICIO ---
+
 document.addEventListener('DOMContentLoaded', function() {
     loadProducts(); 
     initCarousel(); 
@@ -657,17 +665,25 @@ document.addEventListener('DOMContentLoaded', function() {
     startOfferCountdowns(); 
     startStockAlerts(); 
     
-    // Asignar evento al link de contacto en la navegación (nav)
-    document.querySelector('nav ul li:last-child a').onclick = (e) => {
-        e.preventDefault();
-        openContactModal();
-    };
-    // Asignar evento al link de contacto en el footer
-    document.querySelector('footer a[href="#contacto"]').onclick = (e) => {
+    // Función para manejar el clic en los enlaces de contacto
+    const handleContactClick = (e) => {
         e.preventDefault();
         openContactModal();
     };
 
+    // 1. Asignar evento al link de contacto en la navegación (nav)
+    const navContactLink = document.querySelector('nav ul li:last-child a');
+    if (navContactLink) {
+        navContactLink.addEventListener('click', handleContactClick);
+    }
+    
+    // 2. Asignar evento al link de contacto en el footer
+    const footerContactLink = document.querySelector('footer a[href="#contacto"]');
+    if (footerContactLink) {
+        footerContactLink.addEventListener('click', handleContactClick);
+    }
+    
+    // Mensaje informativo para la sección de Reseñas
     const reviewsContainer = document.getElementById('reviewsGrid');
     if (reviewsContainer) {
         reviewsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 3rem; color: #aaa;">Las reseñas se muestran en la ventana de detalle de cada producto. ¡Haz clic en cualquier producto para verlas!</p>';
@@ -677,13 +693,3 @@ document.addEventListener('DOMContentLoaded', function() {
         showNotification("⚠️ ¡Primero selecciona un producto en el catálogo para dejar tu reseña!");
     });
 });
-
-// Cerrar modales al hacer clic fuera
-window.onclick = function(event) {
-    const modals = document.querySelectorAll('.modal');
-    modals.forEach(modal => {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    });
-};
