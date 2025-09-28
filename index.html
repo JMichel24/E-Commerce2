@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Market - Tecnología que Brilla</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <h1><span class="neon">✨ NEON</span> MARKET</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#productos">Productos</a></li>
+                    <li><a href="#ofertas">Ofertas</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+            </nav>
+            <div class="search-cart">
+                <input type="text" placeholder="Buscar productos..." id="searchInput">
+                <button id="cartBtn"><i class="fas fa-shopping-cart"></i> <span id="cartCount">0</span></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>TECNOLOGÍA QUE BRILLA EN LA OSCURIDAD</h2>
+            <p>Lo último en gadgets, gaming y electrónica con estilo futurista.</p>
+            <a href="#productos" class="btn">Explorar Ahora</a>
+        </div>
+    </section>
+
+    <!-- Sección de Ofertas -->
+    <section id="ofertas" class="ofertas">
+        <h2>🔥 OFERTAS RELÁMPAGO</h2>
+        <div class="offers-grid">
+            <div class="offer-card pulse">
+                <img src="https://images.unsplash.com/photo-1593640408182-31c70c8268f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Laptop Gamer">
+                <div class="offer-tag">-30%</div>
+                <h3>Laptop Gamer RGB</h3>
+                <p class="original-price">$25,999 MXN</p>
+                <p class="discount-price">$17,999 MXN</p>
+                <button class="btn-offer" onclick="addToCart(7)">¡Aprovechar!</button>
+            </div>
+            <div class="offer-card pulse">
+                <img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Smartwatch">
+                <div class="offer-tag">-40%</div>
+                <h3>Smartwatch Galaxy Pro</h3>
+                <p class="original-price">$4,500 MXN</p>
+                <p class="discount-price">$2,699 MXN</p>
+                <button class="btn-offer" onclick="addToCart(8)">¡Aprovechar!</button>
+            </div>
+            <div class="offer-card pulse">
+                <img src="https://images.unsplash.com/photo-1606929875503-f186eae44b4d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Drone 4K">
+                <div class="offer-tag">-25%</div>
+                <h3>Drone 4K Ultra HD</h3>
+                <p class="original-price">$8,999 MXN</p>
+                <p class="discount-price">$6,749 MXN</p>
+                <button class="btn-offer" onclick="addToCart(9)">¡Aprovechar!</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Productos Destacados -->
+    <section id="inicio" class="destacados">
+        <h2>✨ LO MÁS VENDIDO</h2>
+        <div class="carousel">
+            <button class="carousel-btn prev" onclick="moveCarousel(-1)">&#10094;</button>
+            <div class="carousel-container" id="carouselContainer">
+                <!-- Se llena con JS -->
+            </div>
+            <button class="carousel-btn next" onclick="moveCarousel(1)">&#10095;</button>
+        </div>
+    </section>
+
+    <!-- Catálogo de Productos -->
+    <section id="productos" class="catalogo">
+        <h2>🚀 PRODUCTOS DESTACADOS</h2>
+        <div class="products-grid" id="productsGrid">
+            <!-- Se llena con JS -->
+        </div>
+    </section>
+
+    <!-- Modal de Producto -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalProductDetails"></div>
+        </div>
+    </div>
+
+    <!-- Carrito Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content cart-modal">
+            <span class="close" onclick="closeCartModal()">&times;</span>
+            <h2>🛒 Tu Carrito</h2>
+            <div id="cartItems">Tu carrito está vacío.</div>
+            <div class="cart-total">Total: $<span id="totalPrice">0</span> MXN</div>
+
+            <!-- Botón para mostrar formulario -->
+            <button id="checkoutBtn" class="btn" onclick="showCheckoutForm()">Finalizar Compra</button>
+
+            <!-- Formulario de compra (oculto inicialmente) -->
+            <div id="checkoutForm" style="display: none; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(100,100,255,0.3);">
+                <h3><i class="fas fa-truck"></i> Datos de Envío</h3>
+                <form id="shippingForm">
+                    <div style="margin: 15px 0;">
+                        <input type="text" placeholder="Nombre completo" required>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <input type="email" placeholder="Correo electrónico" required>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <input type="tel" placeholder="Teléfono" required>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <textarea placeholder="Dirección completa" rows="3" required></textarea>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <select required>
+                            <option value="" disabled selected>Método de pago</option>
+                            <option>Tarjeta de crédito/débito</option>
+                            <option>PayPal</option>
+                            <option>Transferencia bancaria</option>
+                            <option>OXXO / 7-Eleven</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; margin-top: 20px;">Confirmar Pedido</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer CHIDÍSIMO -->
+    <footer id="contacto">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h2><span class="neon">✨ NEON</span> MARKET</h2>
+                <p>Tecnología con actitud. Innovación sin límites.</p>
+                <div class="socials">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#productos">Productos</a></li>
+                    <li><a href="#ofertas">Ofertas</a></li>
+                    <li><a href="#">Términos y Condiciones</a></li>
+                    <li><a href="#">Política de Privacidad</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-newsletter">
+                <h3>NEWSLETTER</h3>
+                <p>Recibe ofertas exclusivas y novedades primero.</p>
+                <form id="newsletterForm">
+                    <input type="email" placeholder="Tu correo electrónico" required>
+                    <button type="submit">Suscribirme</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Neon Market — Hecho con ❤️ y mucho café en México.</p>
+            <div class="payment-icons">
+                <i class="fab fa-cc-visa"></i>
+                <i class="fab fa-cc-mastercard"></i>
+                <i class="fab fa-cc-paypal"></i>
+                <i class="fab fa-cc-amex"></i>
+            </div>
+        </div>
+    </footer>
+
+    <script src="index.js"></script>
+</body>
+</html>
