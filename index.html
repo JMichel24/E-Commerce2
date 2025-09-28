@@ -10,7 +10,6 @@
 </head>
 <body>
 
-    <!-- Header -->
     <header>
         <div class="container header-content">
             <div class="logo">
@@ -21,6 +20,7 @@
                     <li><a href="#inicio">Inicio</a></li>
                     <li><a href="#productos">Productos</a></li>
                     <li><a href="#ofertas">Ofertas</a></li>
+                    <li><a href="#reseñas">Reseñas</a></li>
                     <li><a href="#contacto">Contacto</a></li>
                 </ul>
             </nav>
@@ -31,7 +31,18 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
+    <div id="shippingBanner" class="shipping-banner">
+        <div class="container banner-content">
+            <p><i class="fas fa-shipping-fast"></i> Envío Estándar GRATIS en compras mayores a **$1,500 MXN**</p>
+            <div class="progress-bar-container">
+                <div id="progressText">Agrega productos para envío gratis.</div>
+                <div class="progress-bar-track">
+                    <div id="progressBar" class="progress-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <section class="hero">
         <div class="hero-content">
             <h2>TECNOLOGÍA QUE BRILLA EN LA OSCURIDAD</h2>
@@ -40,7 +51,6 @@
         </div>
     </section>
 
-    <!-- Sección de Ofertas -->
     <section id="ofertas" class="ofertas">
         <h2>🔥 OFERTAS RELÁMPAGO</h2>
         <div class="offers-grid">
@@ -50,7 +60,8 @@
                 <h3>Laptop Gamer RGB</h3>
                 <p class="original-price">$25,999 MXN</p>
                 <p class="discount-price">$17,999 MXN</p>
-                <button class="btn-offer" onclick="addToCart(7)">¡Aprovechar!</button>
+                <div class="countdown-timer" id="timer-7">00:00:00</div> 
+                <button class="btn-offer" onclick="addToCart(7)">¡Aprovechar!</button> 
             </div>
             <div class="offer-card pulse">
                 <img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Smartwatch">
@@ -58,6 +69,7 @@
                 <h3>Smartwatch Galaxy Pro</h3>
                 <p class="original-price">$4,500 MXN</p>
                 <p class="discount-price">$2,699 MXN</p>
+                <div class="countdown-timer" id="timer-8">00:00:00</div>
                 <button class="btn-offer" onclick="addToCart(8)">¡Aprovechar!</button>
             </div>
             <div class="offer-card pulse">
@@ -66,40 +78,46 @@
                 <h3>Drone 4K Ultra HD</h3>
                 <p class="original-price">$8,999 MXN</p>
                 <p class="discount-price">$6,749 MXN</p>
+                <div class="countdown-timer" id="timer-9">00:00:00</div>
                 <button class="btn-offer" onclick="addToCart(9)">¡Aprovechar!</button>
             </div>
         </div>
     </section>
 
-    <!-- Productos Destacados -->
     <section id="inicio" class="destacados">
         <h2>✨ LO MÁS VENDIDO</h2>
         <div class="carousel">
             <button class="carousel-btn prev" onclick="moveCarousel(-1)">&#10094;</button>
             <div class="carousel-container" id="carouselContainer">
-                <!-- Se llena con JS -->
-            </div>
+                </div>
             <button class="carousel-btn next" onclick="moveCarousel(1)">&#10095;</button>
         </div>
     </section>
 
-    <!-- Catálogo de Productos -->
     <section id="productos" class="catalogo">
         <h2>🚀 PRODUCTOS DESTACADOS</h2>
+
+        <div class="filter-controls" id="filterControls">
+            </div>
         <div class="products-grid" id="productsGrid">
-            <!-- Se llena con JS -->
-        </div>
+            </div>
     </section>
 
-    <!-- Modal de Producto -->
+    <section id="reseñas" class="reseñas">
+        <h2>🌟 LO QUE DICEN NUESTROS CLIENTES</h2>
+        <div class="reviews-grid" id="reviewsGrid">
+            </div>
+        <button class="btn" id="addReviewBtn" style="margin-top: 30px;">Escribir una Reseña</button>
+    </section>
+
     <div id="productModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <div id="modalProductDetails"></div>
+            <div id="modalProductDetails">
+                </div>
         </div>
     </div>
 
-    <!-- Carrito Modal -->
     <div id="cartModal" class="modal">
         <div class="modal-content cart-modal">
             <span class="close" onclick="closeCartModal()">&times;</span>
@@ -107,25 +125,15 @@
             <div id="cartItems">Tu carrito está vacío.</div>
             <div class="cart-total">Total: $<span id="totalPrice">0</span> MXN</div>
 
-            <!-- Botón para mostrar formulario -->
             <button id="checkoutBtn" class="btn" onclick="showCheckoutForm()">Finalizar Compra</button>
 
-            <!-- Formulario de compra (oculto inicialmente) -->
             <div id="checkoutForm" style="display: none; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(100,100,255,0.3);">
                 <h3><i class="fas fa-truck"></i> Datos de Envío</h3>
                 <form id="shippingForm">
-                    <div style="margin: 15px 0;">
-                        <input type="text" placeholder="Nombre completo" required>
-                    </div>
-                    <div style="margin: 15px 0;">
-                        <input type="email" placeholder="Correo electrónico" required>
-                    </div>
-                    <div style="margin: 15px 0;">
-                        <input type="tel" placeholder="Teléfono" required>
-                    </div>
-                    <div style="margin: 15px 0;">
-                        <textarea placeholder="Dirección completa" rows="3" required></textarea>
-                    </div>
+                    <div style="margin: 15px 0;"><input type="text" placeholder="Nombre completo" required></div>
+                    <div style="margin: 15px 0;"><input type="email" placeholder="Correo electrónico" required></div>
+                    <div style="margin: 15px 0;"><input type="tel" placeholder="Teléfono" required></div>
+                    <div style="margin: 15px 0;"><textarea placeholder="Dirección completa" rows="3" required></textarea></div>
                     <div style="margin: 15px 0;">
                         <select required>
                             <option value="" disabled selected>Método de pago</option>
@@ -141,7 +149,66 @@
         </div>
     </div>
 
-    <!-- Footer CHIDÍSIMO -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeReviewModal()">&times;</span>
+            <h2>📝 Escribe tu Reseña</h2>
+            <form id="reviewForm">
+                <div style="margin: 15px 0;">
+                    <input type="text" id="reviewName" placeholder="Tu nombre" required>
+                </div>
+                <div class="rating">
+                    <input type="radio" id="star5" name="rating" value="5" required><label for="star5">&#9733;</label>
+                    <input type="radio" id="star4" name="rating" value="4"><label for="star4">&#9733;</label>
+                    <input type="radio" id="star3" name="rating" value="3"><label for="star3">&#9733;</label>
+                    <input type="radio" id="star2" name="rating" value="2"><label for="star2">&#9733;</label>
+                    <input type="radio" id="star1" name="rating" value="1"><label for="star1">&#9733;</label>
+                </div>
+                <div style="margin: 15px 0;">
+                    <textarea id="reviewText" placeholder="Cuéntanos tu experiencia..." rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 20px;">Enviar Reseña</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="contactModal" class="modal">
+        <div class="modal-content contact-modal-content">
+            <span class="close" onclick="closeContactModal()">&times;</span>
+            <h2><i class="fas fa-headset"></i> HABLEMOS</h2>
+            <div class="contact-grid">
+                
+                <div class="contact-form-area">
+                    <h3>Envíanos un mensaje</h3>
+                    <form id="contactForm">
+                        <input type="text" id="contactName" placeholder="Tu Nombre Completo" required>
+                        <input type="email" id="contactEmail" placeholder="Correo Electrónico" required>
+                        <input type="tel" id="contactPhone" placeholder="Teléfono (Opcional)">
+                        <textarea id="contactMessage" placeholder="Tu Mensaje o Consulta" rows="5" required></textarea>
+                        <button type="submit" class="btn" style="width: 100%;">Enviar Mensaje</button>
+                    </form>
+                </div>
+
+                <div class="contact-info-area">
+                    <h3>Encuéntranos</h3>
+                    <div class="map-container">
+                        <div class="map-placeholder">
+                            <p><i class="fas fa-map-marker-alt"></i> NEON MARKET HQ</p>
+                            <p>Av. Digital #1024, Cyber Ciudad, México</p>
+                            <p style="margin-top: 10px;">(Simulación de Mapa en Vivo)</p>
+                        </div>
+                    </div>
+                    <div class="details">
+                        <p><strong>Email:</strong> contacto@neonmarket.mx</p>
+                        <p><strong>Teléfono:</strong> +52 55 1234 5678</p>
+                        <p><strong>Horario:</strong> Lun - Vie (10:00 - 20:00)</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <footer id="contacto">
         <div class="footer-container">
             <div class="footer-brand">
@@ -161,6 +228,8 @@
                     <li><a href="#inicio">Inicio</a></li>
                     <li><a href="#productos">Productos</a></li>
                     <li><a href="#ofertas">Ofertas</a></li>
+                    <li><a href="#reseñas">Reseñas</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
                     <li><a href="#">Términos y Condiciones</a></li>
                     <li><a href="#">Política de Privacidad</a></li>
                 </ul>
@@ -186,6 +255,9 @@
             </div>
         </div>
     </footer>
+
+    <div id="stockNotifications" class="stock-notifications-container">
+        </div>
 
     <script src="index.js"></script>
 </body>
