@@ -1,15 +1,14 @@
 // --- DATOS DE PRODUCTOS Y CONFIGURACIÓN ---
+// NOTA: MOCK_USERS ya no se usa para la autenticación, solo para demostración.
 const FREE_SHIPPING_THRESHOLD = 1500; 
+const SIMULATED_LOAD_TIME = 500; 
 
-// Definir la hora de caducidad de las ofertas (simulación: ahora + X minutos)
 const OFFER_EXPIRY_TIMES = {
-    // Ofertas activas por 60, 45 y 30 minutos desde la carga de la página
     7: Date.now() + 60 * 60 * 1000, 
     8: Date.now() + 45 * 60 * 1000, 
     9: Date.now() + 30 * 60 * 1000, 
 };
 
-// Nombres de productos para notificaciones de stock
 const STOCK_PRODUCTS = [
     "Monitor Curvo 27\"", 
     "Audífonos Gamer RGB", 
@@ -17,17 +16,11 @@ const STOCK_PRODUCTS = [
     "Teclado Mecánico"
 ];
 
-// Base de datos de usuarios simulada
-let MOCK_USERS = [
-    { email: "demo@neon.com", password: "password", name: "Demo User" }
-];
-
 // Estado global de autenticación
 let authStatus = {
     isLoggedIn: false,
     userName: "Mi Cuenta"
 };
-
 
 const products = [
     {
@@ -166,7 +159,7 @@ function updateShippingBanner() {
     }
 }
 
-// --- LÓGICA DE AUTENTICACIÓN ---
+// --- LÓGICA DE AUTENTICACIÓN (USANDO FIREBASE) ---
 
 function updateAuthDisplay() {
     const authText = document.getElementById('authText');
@@ -174,14 +167,16 @@ function updateAuthDisplay() {
     
     if (!authText || !authBtn) return;
     
-    // Remover manejadores anteriores para evitar duplicados
     authBtn.removeEventListener('click', handleLogoutClick);
     authBtn.removeEventListener('click', openAuthModal);
 
     if (authStatus.isLoggedIn) {
         authText.textContent = authStatus.userName.split(' ')[0]; 
         authBtn.addEventListener('click', handleLogoutClick); 
-        showNotification(`👋 ¡Hola, ${authStatus.userName.split(' ')[0]}! Has iniciado sesión.`);
+        // Solo muestra notificación si la función es llamada DESPUÉS de la carga inicial
+        if (authStatus.userName !== "Cargando...") {
+             showNotification(`👋 ¡Hola, ${authStatus.userName.split(' ')[0]}!`);
+        }
     } else {
         authText.textContent = "Mi Cuenta";
         authBtn.addEventListener('click', openAuthModal);
@@ -218,10 +213,12 @@ window.switchAuthMode = function(mode) {
 }
 
 function handleLogoutClick() {
-    authStatus.isLoggedIn = false;
-    authStatus.userName = "Mi Cuenta";
-    updateAuthDisplay();
-    showNotification(`🚪 ¡Sesión cerrada! Vuelve pronto.`);
+    auth().signOut().then(() => {
+        // Sign-out successful. onAuthStateChanged manejará el resto
+    }).catch((error) => {
+        console.error("Error al cerrar sesión:", error);
+        showNotification("❌ Error al cerrar sesión.");
+    });
 }
 
 document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -229,16 +226,15 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
-    const user = MOCK_USERS.find(u => u.email === email && u.password === password);
-
-    if (user) {
-        authStatus.isLoggedIn = true;
-        authStatus.userName = user.name;
-        closeAuthModal();
-        updateAuthDisplay();
-    } else {
-        showNotification("❌ Error: Credenciales incorrectas. (demo@neon.com / password)");
-    }
+    auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            // Success handled by onAuthStateChanged
+            closeAuthModal();
+        })
+        .catch((error) => {
+            console.error("Error de login:", error);
+            showNotification("❌ Error: Credenciales incorrectas o usuario no encontrado.");
+        });
     this.reset();
 });
 
@@ -248,21 +244,37 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
     const email = document.getElementById('registerEmail').value;
     const password = document.getElementById('registerPassword').value;
     
-    if (MOCK_USERS.some(u => u.email === email)) {
-        showNotification("❌ Error: El correo ya está registrado.");
-        return;
-    }
-    
-    const newUser = { name, email, password };
-    MOCK_USERS.push(newUser);
-    
-    authStatus.isLoggedIn = true;
-    authStatus.userName = name;
-    
-    closeAuthModal();
-    updateAuthDisplay();
-    showNotification(`🎉 ¡Registro exitoso, ${name}! Sesión iniciada.`);
+    auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            // Registro exitoso. Actualizar el nombre del usuario y cerrar
+            userCredential.user.updateProfile({
+                displayName: name
+            }).then(() => {
+                 closeAuthModal();
+                 // onAuthStateChanged manejará el resto
+            });
+        })
+        .catch((error) => {
+            console.error("Error de registro:", error);
+            if (error.code === 'auth/email-already-in-use') {
+                 showNotification("❌ Error: El correo ya está registrado.");
+            } else {
+                 showNotification("❌ Error al registrar: Contraseña muy corta o formato de email inválido.");
+            }
+        });
     this.reset();
+});
+
+// Listener de Firebase para manejar el estado de la sesión
+auth().onAuthStateChanged((user) => {
+    if (user) {
+        authStatus.isLoggedIn = true;
+        authStatus.userName = user.displayName || user.email;
+    } else {
+        authStatus.isLoggedIn = false;
+        authStatus.userName = "Mi Cuenta";
+    }
+    updateAuthDisplay();
 });
 
 
@@ -376,7 +388,28 @@ function closeContactModal() {
 }
 
 
-// --- Lógica de Filtros y Catálogo ---
+// --- Lógica de Filtros y Catálogo (Con Skeleton Loading) ---
+
+function createSkeletonCard() {
+    const card = document.createElement('div');
+    card.className = 'skeleton-card product-card';
+    card.innerHTML = `
+        <div class="skeleton-img"></div>
+        <div class="product-info">
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text short"></div>
+            <div class="skeleton-btn"></div>
+        </div>
+    `;
+    return card;
+}
+
+function renderSkeletons(container, count = 6) {
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        container.appendChild(createSkeletonCard());
+    }
+}
 
 function getUniqueCategories() {
     const categories = products.map(p => p.category);
@@ -420,34 +453,41 @@ function filterProducts(category, clickedButton) {
 
 function loadProducts(productList = products) { 
     const container = document.getElementById('productsGrid');
-    container.innerHTML = '';
-
-    if (productList.length === 0) {
-        container.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 3rem; color: #aaa;">No se encontraron productos en esta categoría.</p>';
-        return;
-    }
     
-    productList.forEach(product => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.setAttribute('data-id', product.id); 
-        card.onclick = () => openModal(product.id); 
+    // 1. Mostrar Esqueletos INMEDIATAMENTE
+    renderSkeletons(container, productList.length || 6); 
+    
+    // 2. Simular carga y cargar contenido REAL después del retardo
+    setTimeout(() => {
+        container.innerHTML = ''; // Limpiar esqueletos
+        
+        if (productList.length === 0) {
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 3rem; color: #aaa;">No se encontraron productos en esta categoría.</p>';
+            return;
+        }
+        
+        productList.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.setAttribute('data-id', product.id); 
+            card.onclick = () => openModal(product.id); 
 
-        let priceDisplay = product.originalPrice ? 
-            `<p class="price" style="text-decoration:line-through; font-size:0.9rem; color:#888;">$${product.originalPrice} MXN</p>
-             <p class="price" style="color:#ff00cc; font-size:1.2rem;">$${product.price} MXN</p>` :
-            `<p class="price">$${product.price} MXN</p>`;
+            let priceDisplay = product.originalPrice ? 
+                `<p class="price" style="text-decoration:line-through; font-size:0.9rem; color:#888;">$${product.originalPrice} MXN</p>
+                <p class="price" style="color:#ff00cc; font-size:1.2rem;">$${product.price} MXN</p>` :
+                `<p class="price">$${product.price} MXN</p>`;
 
-        card.innerHTML = `
-            <img src="${product.image}" alt="${product.name}">
-            <div class="product-info">
-                <h3>${product.name}</h3>
-                ${priceDisplay}
-                <button class="btn-add" onclick="event.stopPropagation(); addToCart(${product.id})">Agregar al Carrito</button>
-            </div>
-        `;
-        container.appendChild(card);
-    });
+            card.innerHTML = `
+                <img src="${product.image}" alt="${product.name}">
+                <div class="product-info">
+                    <h3>${product.name}</h3>
+                    ${priceDisplay}
+                    <button class="btn-add" onclick="event.stopPropagation(); addToCart(${product.id})">Agregar al Carrito</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }, SIMULATED_LOAD_TIME); // Retardo simulado
 }
 
 function initCarousel() {
@@ -772,10 +812,32 @@ document.addEventListener('DOMContentLoaded', function() {
     startStockAlerts(); 
     updateAuthDisplay(); // Carga el estado de la sesión al inicio
     
+    // Lógica para el Menú Hamburguesa
+    const menuToggle = document.getElementById('menuToggle');
+    const mainNav = document.getElementById('mainNav');
+    
+    if (menuToggle && mainNav) {
+        menuToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('open');
+        });
+        
+        // Cierra el menú al hacer clic en un enlace (solo en modo móvil)
+        mainNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                 if (window.innerWidth <= 900) {
+                     mainNav.classList.remove('open');
+                 }
+            });
+        });
+    }
+
     // Función para manejar el clic en los enlaces de contacto
     const handleContactClick = (e) => {
         e.preventDefault();
         openContactModal();
+        if (window.innerWidth <= 900 && mainNav.classList.contains('open')) {
+             mainNav.classList.remove('open');
+        }
     };
 
     // 1. Asignar evento al link de contacto en la navegación (nav)

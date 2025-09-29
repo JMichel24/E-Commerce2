@@ -51,6 +51,16 @@ header {
     font-weight: 700;
 }
 
+/* --- Botón Hamburguesa y Navegación Móvil --- */
+
+.menu-toggle {
+    display: none; 
+    font-size: 1.8rem;
+    color: #00ffff;
+    cursor: pointer;
+    order: 2; 
+}
+
 nav ul {
     display: flex;
     list-style: none;
@@ -91,7 +101,7 @@ nav a:hover::after {
 }
 
 .btn-auth {
-    background: rgba(51, 147, 255, 0.2); /* Azul suave */
+    background: rgba(51, 147, 255, 0.2); 
     color: #00ffff;
     border: 1px solid #00ffff;
     padding: 8px 16px;
@@ -102,7 +112,7 @@ nav a:hover::after {
     align-items: center;
     gap: 5px;
     transition: all 0.3s;
-    margin-right: 15px; /* Separación del input de búsqueda */
+    margin-right: 15px; 
 }
 
 .btn-auth:hover {
@@ -513,7 +523,7 @@ nav a:hover::after {
 
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
     padding: 0 2rem;
     max-width: 1400px;
@@ -582,7 +592,6 @@ nav a:hover::after {
     text-align: center;
 }
 .reseñas h2 {
-    color: #ff00cc;
     font-size: 2.5rem;
     margin-bottom: 3rem;
 }
@@ -688,7 +697,7 @@ nav a:hover::after {
 #reviewForm textarea,
 .contact-form-area input,
 .contact-form-area textarea,
-.auth-form input { /* Agregado auth-form input */
+.auth-form input { 
     width: 100%;
     padding: 12px;
     margin: 8px 0;
@@ -824,7 +833,6 @@ nav a:hover::after {
 
 /* FOOTER CHIDÍSIMO (REDESIGN) */
 footer {
-    /* Fondo más oscuro y con textura */
     background: #0a0a14;
     padding: 5rem 2rem 2rem;
     position: relative;
@@ -832,7 +840,6 @@ footer {
     color: #aaa;
 }
 
-/* Línea de energía que lo separa del contenido */
 footer::before {
     content: '';
     position: absolute;
@@ -860,7 +867,7 @@ footer::before {
 }
 
 .footer-links h3, .footer-newsletter h3 {
-    color: #00ffff; /* Títulos en cian neón */
+    color: #00ffff; 
     text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
     margin-bottom: 1.5rem;
     font-size: 1.3rem;
@@ -882,7 +889,6 @@ footer::before {
 .socials a:hover {
     color: #ff00cc;
     transform: scale(1.1);
-    /* Efecto de sombra neón al pasar el mouse */
     text-shadow: 0 0 8px #ff00cc;
 }
 
@@ -914,8 +920,110 @@ footer::before {
 }
 
 
+/* --- SKELETON LOADING STYLES (Nuevo) --- */
+.skeleton-card {
+    background-color: #1a1a2e; /* Fondo de la tarjeta */
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton-img {
+    height: 200px;
+    background-color: #333;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
+.skeleton-text {
+    height: 12px;
+    background-color: #333;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.skeleton-text.short {
+    width: 60%;
+}
+
+.skeleton-btn {
+    height: 40px;
+    width: 100%;
+    background-color: #333;
+    border-radius: 15px;
+    margin-top: 15px;
+}
+
+/* Animación de Brillo (Shimmer effect) */
+.skeleton-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+/* FIN SKELETON LOADING */
+
+
 /* Responsive */
+
+/* Ocultar NAV y mostrar botón Hamburguesa en móvil */
 @media (max-width: 900px) {
+    nav {
+        display: none; 
+        width: 100%;
+        order: 4; 
+        text-align: center;
+        padding: 10px 0;
+    }
+    
+    nav.open {
+        display: block; 
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .menu-toggle {
+        display: block; 
+        order: 2; 
+    }
+
+    .header-content {
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    
+    .logo {
+        order: 1;
+    }
+    
+    .search-cart {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        margin-top: 15px;
+    }
+    
+    .search-cart input {
+        flex-grow: 1;
+        width: 100%;
+    }
+
     .contact-grid {
         grid-template-columns: 1fr; 
     }
@@ -929,24 +1037,9 @@ footer::before {
     .header-content, .footer-container {
         padding: 0 1.5rem;
     }
-
-    nav ul {
-        gap: 1rem;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
     
     .shipping-banner {
-        top: 140px; 
-    }
-
-    .search-cart {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    #searchInput {
-        width: 100%;
+        top: 135px; 
     }
 
     .carousel-container {
